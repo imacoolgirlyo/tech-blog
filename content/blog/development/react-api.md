@@ -1,13 +1,15 @@
 ---
-title: 'React API : useRef'
+title: 'React API : useRef, useEffect'
 date: 2020-07-05 17:21:13
 category: 'react'
 draft: false
 ---
 
+### useRef
+
 [useRef](https://reactjs.org/docs/hooks-reference.html#useref)는 mutable한 ref object를 return 합니다. 이 ref object의 .current property는 전달한 argument(initialValue)로 초기화되며 반환된 object는 컴포넌트의 모든 lifetime에서 값이 유지됩니다.
 
-```js
+```jsx
 const refContainer = useRef(initialValue)
 ```
 
@@ -16,3 +18,13 @@ const refContainer = useRef(initialValue)
 refs는 DOM에 접근할 때도 사용할 수 있습니다. 만약 `<div ref={myRef} />`로 element에 ref object를 전달하면 React는 node가 변경될 때마다 그에 해당하는 DOM node를 .current property에 set합니다.
 
 useRef()는 plain JS Object를 만듭니다. 임의로 `{ current : ...}` 를 만드는 것과 useRef() 가 반환하는 object와 가장 큰 차이는 **useRef()는 모든 render 마다 항상 동일한 ref object를 반환한다는 것입니다.**
+
+### useEffect
+
+```jsx
+useEffect(didUpdate)
+```
+
+useEffect 에 전달되는 함수는 render 결과물이 화면에 반영되고 나면(after the render is commited to the screen) 실행됩니다.
+
+기본적으로 effect는 모든 render 이후에 실행되지만, dependency array에 값을 추가하여 특정 값이 변경될 때만 render가 실행되도록 설정할 수 있습니다.
