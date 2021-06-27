@@ -27,4 +27,8 @@ useEffect(didUpdate)
 
 useEffect 에 전달되는 함수는 render 결과물이 화면에 반영되고 나면(after the render is commited to the screen) 실행됩니다.
 
+- [Render and Commit Phases](https://blog.isquaredsoftware.com/2020/05/blogged-answers-a-mostly-complete-guide-to-react-rendering-behavior/#render-and-commit-phases)
+  - Render Phase는 이전 렌더링 결과와 새로 만든 React DOM의 결과를 비교해서 차이를 계산하는 단계
+  - Commit Phase는 Render Phase에서 계산한 그 차이를 DOM에 반영하는 단계
+
 기본적으로 effect는 모든 render 이후에 실행되지만, dependency array에 값을 추가하여 특정 값이 변경될 때만 render가 실행되도록 설정할 수 있습니다.
