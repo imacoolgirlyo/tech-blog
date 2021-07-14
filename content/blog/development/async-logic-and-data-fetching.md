@@ -96,11 +96,11 @@ const fetchIssuesCount = (org, repo) => async dispatch => {
 
 ## Extracting Posts Selectors
 
-현재까지, `postsSlice` state는 posts 값의 single array로 정의해서 사용해왔다. 우리는 posts array와, loading state field 까지 가지고 있는 object로 바꿔야한다.
+현재까지, `postsSlice` state는 posts 값의 single array로 정의해서 사용해왔다. 이제느 posts array와, loading state field 까지 가지고 있는 object로 바꿔야한다.
 
 `<PostsList>` 같은 UI 컴포넌트는 useSelector hooks을 사용해서 state.posts 값을 읽어오는데 그 값이 array일거라고 판단하고 사용한다. 우리는 새로운 데이터도 받아들일 수 있게끔 위치를 수정해야한다.
 
-reducer에서 data format을 변경할 때마다 컴포넌트가 변경할 필요가 없으면 가장 좋을 것이다. 이걸 방지하는 방법은 slice file에 재 사용 가능한 selector function을 정의하고 각 컴포넌트에서 반복적인 selector logic을 사용하지 않고 이 selector들을 사용해서 data를 가져오도록 하는 것이다. 이렇게 하면 state structure가 변경되면 slice file에 있는 code만 업데이트 시키면 된다.
+reducer에서 data format을 변경할 때마다 컴포넌트가 변경할 필요가 없으면 사실 가장 좋다. 이걸 방지하는 방법은 slice file에 재 사용 가능한 selector function을 정의하고 각 컴포넌트에서 반복적인 selector logic을 사용하지 않고 이 selector들을 사용해서 data를 가져오도록 하는 것이다. 이렇게 하면 state structure가 변경되면 slice file에 있는 code만 업데이트 시키면 된다.
 
 `<PostsList>` 컴포넌트는 모든 posts들을 보여줄 수 있어야 하고, `<SinglePostPage>` 와 `<EditPostForm>` 컴포넌트는 각각의 id에 따라 단일 post만 가져오면 된다. 작은 selector 함수 두 개를 `postsSlice.js` 에 만들어보자.
 
@@ -137,7 +137,7 @@ export const SinglePostPage = ({ match }) => {
 
 재사용 가능한 selector를 만들어서 data를 확인하기 위한 방법을 캡슐화시키는 건 좋은 생각이다. 다음 튜토리얼에서 다루겠지만, `memoized` selector를 사용해서 성능 향상도 할 수 있다.
 
-하지만 다른 추상화들 처럼, 항상 모든 곳에서 적용시켜야 하는 건 아니다. selector를 만드는건 이해해야 하고 유지해야할 코드들이 많다는 뜻이다. 모든 single field state에 selector를 만들어 줄 필요는 없다. selector가 없는 상태에서 시작해서 다른 application code에서도 같은 값을 사용해야 한다면 그 때 추가해보자.
+하지만 다른 추상화들 처럼, 항상 모든 곳에서 적용시켜야 하는 건 아니다. selector를 만드는건 이해해야 하고 유지해야할 코드들이 많다는 뜻이다. 모든 single field state에 selector를 만들어 줄 필요는 없다. selector가 없는 상태에서 시작해서, 다른 application code에서도 같은 값을 사용해야 한다면 그 때 추가해보자.
 
 ## Loading State for Requests
 
@@ -211,3 +211,172 @@ export const selectPostById = (state, postId) =>
 ```
 
 앞에서 얘기했던게 좀 반복적이고 이상해보일 수 있는 `state.posts.posts` 같은 nested object 였다. `items`이나 `data`로 nested array를 변경할 수 있고 그걸 원하지 않는다면 지금처럼 놔둬도 좋다.
+
+### Fetching Data with `createAsyncThunk`
+
+Redux Toolkit의 createAsyncThunk API는 자동으로 'start/succes/failure' action을 제공해준다.
+
+posts 리스트를 가져오기 위해 AJAX call을 실행시키는 thunk를 추가해보자. `src/api` folder에서 client utility 를 import 하고 'fakeApi/posts' 요청을 만들어 보자.
+
+```js
+  import { createSlice, nanoid, createAsyncThunk } from '@reduxjs/toolkit'
+  import { client } from '../../api/client'
+
+  const initialState - {
+    posts: [],
+    status: 'idle',
+    error: null
+  }
+
+  export const fetchPosts = createAsyncThunk('posts/fetchPosts', async () => {
+    const response = await client.get('/fakeApi/posts')
+    return response.posts
+  })
+```
+
+`createAsyncThunk` 는 두 argument를 가진다.
+
+- 이후 생성될 action type의 prefix로 사용하게 될 string
+- Promise를 리턴하게될 payload creator callback 함수, 이 Promise는 데이터를 포함하고 있던지 error를 가진 rejected Promise를 가지고 있다.
+
+payload creator는 AJAX call을 만들고 Ajax call에서 바로 Promise를 리턴하던지 API response로 부터의 데이터를 반환한다. Promise를 반환하기 때문에 async/await syntax를 사용해서 이를 처리한다.
+
+이 경우에 우리는 action type prefix로 'posts/fetchPosts' 를 전달한다. payload creation callback은 response를 return 하기 위해서 API call을 기다린다. 이 response 객체는 `{ posts: []}` 이고 이 array를 action으로 dispatch 하고 싶다. 그래서 response.posts를 가져와 callback에서 반환시킨다.
+
+만약 `dispatch(fetchPosts())` 를 실행시키면, fetchPosts thunk는 action type `posts/fetchPosts/pending` 을 첫번째로 dispatch 한다.
+
+reducer에서 확인해보면 status가 loading인 것을 확인할 수 있다.
+
+Promise가 resolve되면, fetchPosts가 callback 함수가 반환한 response.posts를 가지고 `posts/fetchPosts/fulfilled` 를 dispatch 한다.
+
+Dispatching Thunks from Components
+
+`<PostsList>` fetch 한 데이터들로 컴포넌트를 업데이트 시켜보자. 컴포넌트에서 fetchPosts를 import 한다. 다른 action creators들 처럼 dispatch 해야 하기 때문에 useDispatch hook도 추가한다. `<PostsList>`가 mount되면 이 data를 가져오고 싶기 때문에 useEffect hook도 import 시킨다.
+
+```js
+import React, { useEffect } from 'react'
+import { useSelector, useDispatch } from 'react-redux'
+import { selectAllPosts, fetPosts } from './postsSlice'
+
+export const PostsList = () => {
+  const dispatch = useDispatch()
+  const posts = useSelector(selectAllPosts)
+
+  const postStatus = useSelector(state => state.posts.status)
+
+  useEffect(() => {
+    if (postStatus === 'idle') {
+      dispatch(fetchPosts())
+    }
+  }, [postsStatus, dispatch])
+}
+```
+
+posts list를 한번만 fetch 하는게 중요하다. 뷰를 바꾸기 위해서 컴포넌트가 render 렌더 될 때마다 매번 실행시키면 posts를 여러번 실행시키게 된다. `posts.status`를 이용하면 실제로 언제 fetch 헤야하는지 알 수 있고 'idle' 상태일 때만 다시 fetch 하면 된다.
+
+### Reducers and Loading Actions
+
+다음은 이 reducer 들에서 이런 두 가지 action들을 다뤄야 한다. -> 어떤 action들이라는 거지?
+우리가 사용하고 있는 `createSlice` API를 좀 더 깊게 살펴보자.
+
+`createSlice`는 우리가 reducers field에 정의 했던 모든 reducer function의 action creator를 생성한다. 그리고 생성된 type들은 reducer의 이름을 포함하고 있다.
+
+```js
+console.log(
+  postUpdated({ id: '123', title: 'First Post', content: 'Some text here' })
+)
+/*
+{
+  type: 'posts/postUpdated',
+  payload: {
+  id: '123',
+  title: 'First Post',
+  content: 'Some text here'
+  }
+}
+*/
+```
+
+그러나, slice reducer가 slice의 reducer field에 정의되지 않은 다른 action에 반응해야 할 때가 여러번 있다. 우리는 이 경우에 slice의 `extraReducers` field를 사용할 수 있다.
+
+`extraReducers` object들의 key들은 redux action type string이여야 한다. 직접 손으로 쓸 수 있지만 '/' 문자열을 포함하고 있을 수 때문에 번거롭다.
+
+```js
+const postsSlice = createSlice({
+  name: 'posts',
+  initialState,
+  reducers: {
+    // slice-specific reducers here
+  },
+  extraReducers: {
+    'counter/increament': (state, action) => {
+      // posts slice를 업데이트 하기 위한 일반 reducer logic
+    },
+  },
+})
+```
+
+하지만 Redux Toolkit으로 생성된 action creator들은 actionCreator.toSting() 호출한다면 자동으로 action type string을 반환한다. ES6 object literal computed properties를 사용해서 넣으면 action type들이 자동으로 object의 key가 된다.
+
+```js
+import { increment } from '../features/counter/counterSlice'
+
+const object = {
+  [increment]: () => {},
+}
+
+console.log(object) // { 'counter/increment' : Function }
+```
+
+extraReducers field에서도 가능하다.
+
+```js
+const postsSlice = createSlice({
+  name: 'posts',
+  initialState,
+  reducers: {
+    // slice-specific reducers here
+  },
+  extraReducers: {
+    [increment]: (state, action) => {
+      // posts slice를 업데이트 하기 위한 일반 reducer logic
+    },
+  },
+})
+```
+
+builder callback syntax를 이용해서 extra reducer를 추가할 수 있다. object 대신 extraReducers에 function을 전달하면 각각의 경우에 builder parameter를 사용할 수 있다. `builder.addCase()` 는 listen 할 action의 string 값을 받거나 Redux toolkit action creator도 받는다.
+
+이 경우에는 fetchPosts로 dispatch된 'pending', 'fulfilled' action 도 듣고 있어야 한다. fetchPost function을 현재 action creator에 붙이고 그런 actions들을 실행시키기 위해 extraReducers들을 전달한다.
+
+```js
+export const fetchPosts = createAsyncThunk('posts/fetchPosts', async () => {
+  const response = await client.get('fakeApi/posts')
+  return response.posts
+})
+
+const postsSlice = createSlice({
+  name: 'posts',
+  initialState,
+  reducers: {},
+  extraReducers: {
+    [fetchPosts.pending]: (state, action) => {
+      state.status = 'loading'
+    },
+    [fetchPosts.fulfiled]: (state, action) => {
+      state.status = 'succeeded'
+      state.posts = state.posts.concated(action.payload)
+    },
+    [fetchPosts.rejected]: (state, action) => {
+      state.status = 'failed'
+      state.error = action.error.message
+    },
+  },
+})
+```
+
+우리는 이 세가지 action을 이용할 수 있다.
+
+- request가 시작되면, status emum이 'loading'으로 바뀐다.
+- request가 성공적으로 끝나면 'succeeded'로 바뀌고 state.posts가 업데이트 된다.
+- request가 실패하면 status는 'failed'로 되고 display 할 수 있는 형태의 error message가 저장된다.
