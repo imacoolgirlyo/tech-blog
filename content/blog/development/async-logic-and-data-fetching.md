@@ -380,3 +380,119 @@ const postsSlice = createSlice({
 - request가 시작되면, status emum이 'loading'으로 바뀐다.
 - request가 성공적으로 끝나면 'succeeded'로 바뀌고 state.posts가 업데이트 된다.
 - request가 실패하면 status는 'failed'로 되고 display 할 수 있는 형태의 error message가 저장된다.
+
+## [Displaying Loading State](https://redux.js.org/tutorials/essentials/part-5-async-logic#displaying-loading-state)
+
+`<PostsList>` 컴포넌트는 Redux에 저장된 posts들의 모든 업데이트를 이미 확인했다. 그래서 만약 화면을 refresh 한다면 fake API 에 있는 random posts들이 보여야 한다.
+
+우리가 사용하는 fake API는 data를 즉시 반환한다. 하지만 실제 API call은 response를 반환하기 까지 시간이 걸린다. 그래서 이 떄 loading..이라는 indicator를 보여주고 user에게 현재 data를 기다리고 있다고 알려주는게 좋다.
+
+state.posts.status emum에 맞게 다른 UI를 보여주자.
+
+```js
+export const PostsList = () => {
+  const dispatch = useDispatch()
+  const posts = useSelector(selectAllPosts)
+
+  const postStatus = useSelector(state => state.posts.status)
+  const error = useSelector(state => state.posts.error)
+
+  useEffect(() => {
+    if (postStatus === 'idle') {
+      dispatch(fetchPosts())
+    }
+  }, [postStatus, dispatch])
+}
+
+let content
+
+if (postStatus === 'loading') {
+  content = <div>Loading...</div>
+} else if (postStatus === 'succeeded') {
+  const orderedPosts = posts
+    .slice()
+    .sort((a, b) => b.date(localCompare(a.date)))
+
+  content = orderedPosts.map(post => <PostExcerpt key={post.id} post={post} />)
+} else if (postStatus === 'failed') {
+  content = <div>{error}</div>
+}
+
+return (
+  <section>
+    <h2>Posts</h2>
+    {content}
+  </section>
+)
+```
+
+fake API는 즉시 data를 반환하기 때문에 로딩 스피너를 거의 보지 못할 것이다. API 요청이 좀 더 오래 걸리는 것을 표현하기 위해서 api/server.js를 열어서 아래를 uncomment 해보자.
+
+```js
+// this.timing = 2000
+```
+
+이 라인을 uncomment 하면 fake API가 response 전에 2초를 강제로 기다릴 것이다. UI가 어떻게 spinner를 보여줄지 보고 싶다면 이 라인을 변경시켜보면 되겠다.
+
+## Loading Users
+
+이때까지 post를 fetching하고 display 하는 방법을 알아보았다. 근데 posts를 보면 author가 Unknown author 라고 되어있다.
+
+이건 post entries가 fake API server로 무작위로 만들어지기 때문이다. fake API server는 또한 우리가 page를 reload할 때마다 무작위로 fake user를 만든다. application이 시작할 때 그런 user들을 fetch 하기 위해서 users slice를 만들어야 한다.
+
+저번에 만들었던 것 처럼, API로 user들을 가져오고 그 값을 반환하기 위해서 async thunk를 만들어보자. 그리고 extraReducers slice field에 `fulfiled` action을 만들어주자. 지금부터 loading state에 대한 걱정은 잠시 넣어두려한다.
+
+```js
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
+import { client } from '../../api/client'
+
+const initalState = []
+
+export const fetchUsers = createAsyncThunk(
+  ('users/fetchUsers',
+  async () => {
+    const response = await client.get('/fakeApi/users')
+    return response.users
+  })
+)
+
+const usersSlice = createSlice({
+  name: 'users',
+  initialState,
+  reducers: {},
+  extreaReducers: {
+    [fetchUsers.fuilfiled]: (state, action) => {
+      return action.payload
+    },
+  },
+})
+
+export default usersSlice.reducer
+```
+
+application이 시작될 때 한번만 user list를 fetch 하려 한다. `index.js` file 안에 바로 `fetchUsers` thunk를 dispatch 할 것이다.
+
+```js
+import { fetchUsers } from './features/users/usersSlice'
+
+store.dispatch(fetchUsers())
+
+ReactDOM.render(
+  <React.StrictMode>
+    <Provider store={store}>
+      <App />
+    </Provider>
+  </React.StricgtMode>,
+  document.getElementById('root')
+)
+```
+
+이제 각각의 posts에 username이 다시 보이기 시작할 거다. 그리고 `<AppPostForm>` 에 'Author' dropdown에 동일한 users 리스트를 보여줘야 한다.
+
+# [Adding New Posts](https://redux.js.org/tutorials/essentials/part-5-async-logic#adding-new-posts)
+
+이 section에 마지막 단계이다. `<AppPostForm>` 을 이용해 새로운 post를 추가할 때, post는 app 안의 Redux store에만 저장된다. 사실 우리는 실제로 그 데이터를 '저장'하기 위해서 API call을 통해서 새로운 post를 만들어야 한다. 이게 물론 fake API이긴 하지만 새로운 post는 우리가 reload 하면 유지되지 않을 것이다. 만약 우리가 실제 백엔드 서버를 가지고 있다면 다음번에 reload 할 때 그 값을 가져올 수 있다.
+
+## Sending Data with Thunks
+
+data를 featching 하는 작업 말고 data를 보내는 작업을 돕기 위해 `createAsyncThunk` 을 사용해왔다. `<AddPostForm>` 에서 전달하는 값을 argument로 받는 thunk를 만들고 data를 저장하기 위해서 fake API로 HTTP POST 요청을 할 것이다.
