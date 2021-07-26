@@ -496,3 +496,5 @@ ReactDOM.render(
 ## Sending Data with Thunks
 
 data를 featching 하는 작업 말고 data를 보내는 작업을 돕기 위해 `createAsyncThunk` 을 사용해왔다. `<AddPostForm>` 에서 전달하는 값을 argument로 받는 thunk를 만들고 data를 저장하기 위해서 fake API로 HTTP POST 요청을 할 것이다.
+
+진행하면서 리듀서에서 새로운 post object를 다루는 방법을 바꾸려한다. 현재는 `postsSlice` 는 `postAdded`를 위한 prepare callback에서 새로운 post object를 만든다. 데이터를 서버에 저장하는 대부분의 앱의 경우 서버는 unique한 ID들을 생성해서 extra field에 추가하고 response data에 그 completed data를 반환한다. 그래서 {title, content, user: userId} 와 같은 request body를 서버에 전달하면 온전한 complete post object를 받아서 이를 postsSlice state에 추가해준다.
