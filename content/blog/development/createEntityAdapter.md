@@ -14,19 +14,21 @@ draft: false
 
 [참고: Normalizing State Shape](https://redux.js.org/usage/structuring-reducers/normalizing-state-shape)
 
-Redux store에 어떻게 data를 저장할지 디자인하는 것도 매우 중요하다. Normalized Data는 아래 형태 처럼 하나의 Entity를 저장한다.
+Reducer를 간단하게 만들거나, store 상에 중복된 데이터를 만들지 않기 위해서 데이터를 Normalizing 하는게 매우 중요하다.
+
+아래와 같이 id들의 배열, key를 id, value는 data로 저장한다면 Normalized Data 라고 볼 수 있다. 조금 더 살펴보자.
 
 ```js
 {
   ids: ['project1', 'project2'], // 각 데이터(Record)들의 id 들의 배열
   entities: {
-    project1 : { name: '첫 프로젝트'},
+    project1: { name: '첫 프로젝트'},
     project2: { name : '두번째 프로젝트'}
   } // key는 id, value는 data로 한 entities
 }
 ```
 
-배열 형태로 저장된 데이터의 경우 특정 item을 찾기 위해서는 매번 array의 loop을 돌아서 찾아야한다. 이는 수백, 수천개의 데이터가 있지 않는 이상 성능에 크게 영향을 주진 않지만 특정 item을 찾는 작업은 매우 빈번하게 일어나기 때문에 이를 쉽게 하는 건 매우 중요하다!
+**특징**
 
 - 각 type의 data는 state 내에서 자신만의 `table` 이 있어야 한다.
 - 이 table에 데이터를 저장할 때는 항상 key가 `id`이고 value는 `data`인 형태로 저장한다.
@@ -34,6 +36,15 @@ Redux store에 어떻게 data를 저장할지 디자인하는 것도 매우 중�
 - id들의 array는 정렬 순서를 나타내야 한다.
 
 💡 **한 Entity의 data가 여러 곳에서 사용되는 경우 Normalized Data 형태로 저장하는 게 이후에 중복된 데이터를 만들지 않을 수 있다.**
+
+배열 형태로 저장된 데이터의 경우 특정 item을 찾기 위해서는 매번 array의 loop을 돌아서 찾아야한다. 이는 수백, 수천개의 데이터가 있지 않는 이상 성능에 크게 영향을 주진 않지만 특정 item을 찾는 작업은 매우 빈번하게 일어나기 때문에 이를 쉽게 하는 건 매우 중요하다!
+
+Normalized Data의 경우, 각 item들의 reference가 id이니 id를 안다면 item을 쉽게 찾을 수 있다.
+
+## Redux의 createEntityAdapter
+
+createEntityAdapter 를 사용하면 data를 Normalized 한 형태로 저장할 수 있다.
+이 Adapter는 고맙게도 기본 [CRUD reducer](https://redux-toolkit.js.org/api/createEntityAdapter#crud-functions)와 [selector](https://redux-toolkit.js.org/api/createEntityAdapter#selector-functions)를 제공해주는데 이를 이용한다면 데이터를 mutate 하는 경우에도 쉽게 Normalized 형태를 유지할 수 있다.
 
 ## Initial Data 설정
 
