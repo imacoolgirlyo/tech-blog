@@ -2,7 +2,7 @@
 title: 'React DnD 사용해서 특정 카드의 순서 변경하기 '
 date: 2021-08-27 16:21:13
 category: 'development'
-draft: false
+draft: true
 ---
 
 ### Card UI 순서 변경 하기
