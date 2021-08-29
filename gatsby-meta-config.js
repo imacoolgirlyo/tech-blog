@@ -1,9 +1,9 @@
 module.exports = {
-  title: `My Tech Blog`,
+  title: `seokyung.jung`,
   description: `Blog posted about ...`,
   author: `Seokyung`,
-  introduction: `매일 개발 일지를 씁니다. 그리고..`,
-  siteUrl: `https://amiacoolgirl-dev.netlify.app/`, // Your blog site url
+  introduction: `가끔 개발 일지를 씁니다. 그리고..`,
+  siteUrl: `https://seokyungjung.netlify.app/`, // Your blog site url
   social: {
     twitter: ``, // Your Twitter account
     github: `https://github.com/imacoolgirlyo`, // Your GitHub account
