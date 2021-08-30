@@ -1,11 +1,20 @@
 ---
-title: '🔑 Data Fetching And React Query'
+title: '🔑 React Query에서의 Server State 그리고 CacheTime, StaleTime'
 date: 2021-07-12 16:21:13
-category: 'development'
-draft: false
+category: 'React-Query'
+draft: true
 ---
 
 > Server state and client state are fundamentally different.
+
+흔히들, 서버로 request 한 후에 받은 response data를 redux store에 저장하여 UI rendering시 화면에 그린다. 별도의 CRUD 작업이 이루어지면 request 를 다시 날릴 뿐 아니라 새로운 state 값을 사용하도록 reducer에서 state를 조작해야한다.
+
+적절한 시점에 store에 저장해두고 있는 state 들을 갱신시키지 않으면 fetch해온 데이터가 outdated된 데이터 일 가능성이 커진다.
+또한 만약 store 구조가 update 시키기 어려운 구조라면 쉽게 fetch해서 새로운 데이터로 갱신하면 될 일을 어렵게 reducer를 만들어서 해결해야 할 수 도 있을 것이다.
+
+React Query는 response data는 Server State로 보고 State Management tool에서 저장하지 않아야 하며 Redux store에는 UI State들인 Client State만 다뤄야한다고 본다.
+
+React Query에서의 Server State 정의는 아래와 같다.
 
 Server State:
 
