@@ -1,19 +1,53 @@
 ---
-title: 'Async Logic and Data Fetching'
-date: 2021-07-12 16:21:13
+title: '[Docker] docker tutorial #1 : container, container image, Volume, bind mount'
+date: 2021-09-22 16:21:13
 category: 'development'
 draft: true
 ---
 
-### docker
+- docker container
+- docker container image
+- docker build && run
+- 매번 다른 환경이 만들어짐? -> Volume으로 이를 해결
+- bind mount
+- docker compose
 
-docker를 써서, 우리의 application code 를 infrastructure와 분리시킬 수 있다. Docker를 사용하면 항상 같은 환경에서 software를 제공할 수 있음
+### Docker Container와 Container Image
+
+> Container와 독립적인 File System
+
+container는 host machine의 프로세스와는 다른 독립적인 프로세스이다(내 컴퓨터에서 돌아가는 가상환경이라고 생각하면 쉬울 듯). container는 자신만의 file system을 가지며 아래와 같이 구성되어있다.
+
+![컨테이너 내의 파일 시스템](./images/file-system2.png)
+
+컨테이너마다 이런 독립적인 파일시스템이 만들어지는데, 컨테이너 이미지라는 애가 제공해준다. 여기에는 해당 컨테이너에 필요한 dependencies, configuration 정보, 환경 변수 등 컨테이너를 실행시키기 위한 모든 정보들이 포함되어 있다.
+
+> 그럼 이미지는 어떻게 만드나?
+
+Dockerfile에는 이미지를 만들 때 필요한 base Image 정보나 필요한 폴더, command 등을 적혀있다. build 커맨드를 통해 이를 실행시키면 컨테이너 이미지가 빌드된다.
+아래는 컨테이너 이미지를 만들기 위한 `Dockerfile`의 예시이다.
+
+```zsh
+# syntax=docker/dockerfile:1
+FROM node:12-alpine
+RUN apk add --no-cache python g++ make
+WORKDIR /app
+COPY . .
+RUN yarn install --production
+CMD ["node", "src/index.js"]
+
+
+# docker image 만들기(빌드하기)
+docker build -t getting-started .
+
+# container 실행
+docker run -dp 3000:3000 getting-started
+```
+
+https://medium.com/swlh/understand-dockerfile-dd11746ed183
+https://docs.microsoft.com/ko-kr/dotnet/architecture/microservices/container-docker-introduction/docker-containers-images-registries
 
 Image의 running Instance가 container임
-
-- Image가 container의 파일 시스템을 포함하고 있기 떄문에, application을 실행시키기 위해서 필요한 모든 것들을 포함하고 있다. (모든 dependencies, configuration, scripts, binaries)
-
-Dockerfile : 우리가 세팅하고 싶은 환경을 dockerfile에 정의해둔다. 이 환경으로 docker Image를 build한다.
 
 docker-compose : - volumes: container의 usr/src/app과 현재 src를 연결 - environment: container에서의 환경 변수 세팅 - ports: 현재 api 9090 포트와 docker 8080 연결
 
