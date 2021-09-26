@@ -95,3 +95,5 @@ class UrlResource extends Resource {
   // }
 }
 ```
+
+참고 : https://ko.javascript.info/class-inheritance#ref-438
