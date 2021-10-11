@@ -124,7 +124,7 @@ documents:  {
 
 ## createEntityAdapter로 Normalized data 쉽게 만들기
 
-createEntityAdapter 를 사용하면 data를 Normalized 한 형태로 저장할 수 있다. 이 Adapter는 고맙게도 기본 CRUD function와 selector를 제공해주는데 이를 이용한다면 데이터를 mutate 하는 경우에도 쉽게 Normalized 형태를 유지할 수 있다.
+redux-toolkit의 createEntityAdapter 를 사용하면 data를 Normalized 한 형태로 저장할 수 있습니다. 이 Adapter는 고맙게도 기본 CRUD function와 selector를 제공해주는데 이를 이용한다면 데이터를 mutate 하는 경우에도 쉽게 Normalized 형태를 유지할 수 있습니다.
 
 ### `projectAdpater.getInitialState()`로 Initial State 생성
 
@@ -199,8 +199,6 @@ export const projectSelectors = projectAdapter.getSelectors(
 const projects = useSelector(projectSelectors.selectAll)
 const project1 = useSelector(projectSelectors.selectById('project1'))
 ```
-
-`createEntityAdapter`에서 제공해주는 여러 function과 selector function들을 통해 Normalized State 형태를 유지하며
 
 ### 참고
 
