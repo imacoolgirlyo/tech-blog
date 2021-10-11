@@ -124,9 +124,7 @@ documents:  {
 
 ## createEntityAdapter로 Normalized data 쉽게 만들기
 
-redux-toolkit의 createEntityAdapter를 사용하면 Normalized 형태를 쉽게 만들 수 있으며 데이터 추가 및 변경 시 Normalized 형태를 유지하기 쉽습니다.
-
-createEntityAdapter는 initial State를 ids와 entities 형태로 만들어줄 뿐만 아니라, 기본적인 CRUD reducer와 selector 또한 제공해줍니다.
+createEntityAdapter 를 사용하면 data를 Normalized 한 형태로 저장할 수 있다. 이 Adapter는 고맙게도 기본 CRUD function와 selector를 제공해주는데 이를 이용한다면 데이터를 mutate 하는 경우에도 쉽게 Normalized 형태를 유지할 수 있다.
 
 ### `projectAdpater.getInitialState()`로 Initial State 생성
 
@@ -147,7 +145,9 @@ const projectsSlice = createSlice({
 }
 ```
 
-### Reducer로 사용할 수 있는 기본적인 CRUD Function 제공
+### Reducer로 사용할 수 있는 기본적인 CRUD Function 사용해서 store 데이터 변경하기
+
+ex) 여러 데이터 추가하기, 데이터 삭제하기
 
 ```js
 const projectsSlice = createSlice({
@@ -184,7 +184,7 @@ dispatch(projectsRemoveOne('project1')) // ids와 entities 모두에서 삭제
 
 `projectsAdapter.setAll` 외에도 entities에 값이 없을 때만 추가해주는 `addOne`, `updateOne`, 여러 개의 entities 값을 한번에 변경하는 `updateMany` 등의 다양한 function을 제공해줍니다.
 
-### Selector Functions
+### Selector Functions 사용해서 특정 값 불러오기
 
 projects의 모든 data 가져오기 selectorAll
 id로 특정 data만 가져오는 selectorById 등을 제공해줍니다.
@@ -200,7 +200,7 @@ const projects = useSelector(projectSelectors.selectAll)
 const project1 = useSelector(projectSelectors.selectById('project1'))
 ```
 
-`createEntityAdapter`에서 제공해주는 여러 function들을 통해 Normalized State 형태를 유지하
+`createEntityAdapter`에서 제공해주는 여러 function과 selector function들을 통해 Normalized State 형태를 유지하며
 
 ### 참고
 
