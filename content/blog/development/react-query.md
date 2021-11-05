@@ -1,6 +1,6 @@
 ---
 title: '🔑 React Query에서의 Server State 그리고 핵심 개념'
-date: 2021-07-12 16:21:13
+date: 2021-11-05 16:21:13
 category: 'React-Query'
 draft: false
 ---
@@ -76,6 +76,7 @@ query의 key가 변할 때 마다 다시 refetch 하므로 query key를 useEffec
 
 - 새로운 query의 instance가 mount 되었을 때 (예를 들어 query key가 변경되었을 때)
 - window가 refocused 되었을 때
+  - background refetch가 일어나므로, isFetching 상태를 사용하여 loader를 보여줄 수 도 있다.
 - network가 다시 연결되었을 때
 - query에 refetch interval이 따로 설정된 경우
 
@@ -84,3 +85,52 @@ query의 key가 변할 때 마다 다시 refetch 하므로 query key를 useEffec
 ### 3. Query가 실패하면 UI에 error를 보여주기 전에 약간의 딜레이 간격을 두고 조용히 3번 재시도한다.
 
 ### 4. Query 결과는 구조적으로 공유되어서 실제로 값이 변경되었는지 아닌지 감지 할 수 있다. 만약에 변경되지 않은 경우는 reference값이 변경되지 않고 유지 되기 때문에 useCallback 이나 useMemo 도 적극 활용해보면 좋다.
+
+## useMutation
+
+Read 는 useQuery, Create, Update, Delete 는 useMutation을 사용한다.
+
+보통 어떤 리스트에 item을 추가할 때, 서버에 POST 요청하고 response를 받는데 까지 시간이 걸리기 때문에 loader를 붙이는게 자연스럽다.
+useMutation를 이용하여 추가시 loader 추가나 리스트에 지연 없이 바로 아이템이 추가된 것 처럼 보여지게 할 수 도 있다.
+
+useMutation은 [호출할 함수, mutation 요청에 대한 정보]을 return 한다.
+
+```js
+const [createPost, createPostInfo] = useMutation((values) => axios.post('/api/posts', values, {
+  onSuccess: () => { // Mutation이 성공했을 때 다시 posts를 가져오도록 함 실행되는 callback
+     queryCache.invalidateQueries('posts')
+  },
+  onError: (error) => {
+    window.alert(error.response.data.messsage)
+  },
+  onSettled: () => { // onSuccess나 onError와 비슷함.
+  // 위의 onSuccess를 정의하지 않고 onSettled에서 호출하도록 하면 에러 발생시에도 다시 query를 해온다.
+   queryCache.invalidateQueries('posts')
+  }
+}))
+
+return (
+  <form
+    onSubmit={createPost}
+    buttonText={
+      createPostInfo.isLoading
+      ? 'Saving...'
+      : createPostInfo.isSuccess
+      ? :'Saved'
+      : 'Create New Post'}
+    />
+)
+```
+
+```js
+const [savePost, savePostInfo] = useMutation(
+  values =>
+    axios.patch(`/api/posts/${values.id}`, values).then(res => res.data),
+  {
+    onSuccess: (data, values) => {
+      queryCache.setQueryData(['posts', String(values.id)], data) // 변경하고자 하는 값 바로 UI에 만영
+      queryCache.invalidateQueries(['post', String(values.id)]) // Data Accuracy를 위해서 다시 refetch
+    },
+  }
+)
+```
