@@ -53,33 +53,6 @@ Access Token은 만료시간이 있기 때문에 새로운 Access Token 발급�
 google에서 발급해준 id token을 사용하여 `${process.env.FIREBASE_IDENTI_ENDPOINT}/accounts:signInWithIdp?key=${WEB_API_KEY}`에 POST 요청하면, 아래와 같은 userData를 얻을 수 있다.
 여기에서 가져온 localId로 uid를 설정한다.
 
-```js
-{
-  kind: 'identitytoolkit#VerifyAssertionResponse',
-  context: '',
-  providerId: 'google.com',
-  displayName: 'Seokyung Jung',
-  fullName: 'Seokyung Jung',
-  email: 'seokyung.jung@business-canvas.com',
-  emailVerified: true,
-  photoUrl: 'https://lh3.googleusercontent.com/a-/AOh14Gi23snbkcn-zkniGG2d1xqLYbRylTp7QN2anZe-=s96-c',
-  firstName: 'Seokyung',
-  lastName: 'Jung',
-  rawUserInfo: '{"granted_scopes":"openid https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email","id":"101710925762018289635","name":"Seokyung Jung","given_name":"Seokyung","family_name":"Jung","verified_email":true,"locale":"en","email":"seokyung.jung@business-canvas.com","picture":"https://lh3.googleusercontent.com/a-/AOh14Gi23snbkcn-zkniGG2d1xqLYbRylTp7QN2anZe-=s96-c"}',
-  federatedId: 'https://accounts.google.com/101710925762018289635',
-  oauthAccessToken: 'FirebaseAuthEmulatorFakeAccessToken_google.com',
-  oauthIdToken: '',
-  localId: 'ND330',
-  idToken: '',
-  refreshToken: 'S06JoDakbG3rgtqW-hLLVOyBuaFQV0n3A9GNFurtrwscCjX1SEKhAvrlcLtbsLB3gMEIqTL1mvGFVQvi0CHbmksaVyYPqRIoSG4HHfbM2B7h6dFnudg5-LvpvbJWT488e_2m-NC5925IZ5g53Vg5FjNhf7EgRrGjOKODQ20EoWPr62PcbAQJnv3QvbCMCvMqW_eBgqaaMZW6',
-  expiresIn: '3600'
-}
-```
-
-res.cookie로 typed-token이라는 id token을 발급한다. 얘는 최대 10년 뒤에 expire 되게 설정한다.
-firebase ID token은 1시간 뒤에 expire 되는 토큰이다.
-우리는 access token이라는건 사용하지 않나?
-
 ### References
 
 - https://auth0.com/blog/id-token-access-token-what-is-the-difference/
