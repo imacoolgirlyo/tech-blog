@@ -1,8 +1,8 @@
 ---
-title: '[Docker] docker tutorial #1 : container, container image, Volume, bind mount'
+title: '[Docker] docker tutorial #1 : container, container image, Volume 살펴보기'
 date: 2021-09-22 16:21:13
 category: 'development'
-draft: true
+draft: false
 ---
 
 - docker container
@@ -92,15 +92,13 @@ bind mount는 우리가 mountpoint를 직접 지정할 수 있다.
 
 container끼리 networking 할 수 있음 (Todo App - MySQL)
 
-m1에 mysql image는 설치하지 못한다...후덜덜 -> 대신 mariaDB를 설치해서 해볼 수 있음
-
 network를 통해서 현재 app이랑 외부의 DB와 연동시킬 수 있었다. 하지만 이렇게 네트워크를 만들어주고 컨테이너를 시작하고, 환경 변수
 세팅하고 하는 등의 작업을 해야했다. 이걸 매번 기억하기도 어렵고, 다른 사람들과 공유하기도 어려워짐
 
 docker compose!
 우리가 필요한 환경 세팅 해주는 파일 docker-compose.yml
 
-#### Volumns
+#### Volumes
 
 Container volumes
 With the previous experiment, we saw that each container starts from the image definition each time it starts. While containers can create, update, and delete files, those changes are lost when the container is removed and all changes are isolated to that container. With volumes, we can change all of this.
@@ -111,6 +109,6 @@ There are two main types of volumes. We will eventually use both, but we will st
 
 docker-compose up
 
-compose file 안에 있는 named volume들은 docker-compose down 시 삭제되지 않는다. 삭제하고 싶으면 --volumns tag를 붙어여함
+compose file 안에 있는 named volume들은 docker-compose down 시 삭제되지 않는다. 삭제하고 싶으면 --volumes tag를 붙어여함
 
 https://github.com/docker/getting-started/issues/124#issuecomment-782028688
