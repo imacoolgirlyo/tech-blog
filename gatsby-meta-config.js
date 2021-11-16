@@ -3,13 +3,19 @@ module.exports = {
   description: `Blog posted about ...`,
   author: `Seokyung`,
   introduction: `가끔 개발 일지를 씁니다. 그리고..`,
-  siteUrl: `https://seokyungjung.netlify.app/`, 
+  siteUrl: `https://seokyungjung.netlify.app/`, // Your blog site url
   social: {
-    github: `https://github.com/imacoolgirlyo`, 
+    twitter: ``, // Your Twitter account
+    github: `https://github.com/imacoolgirlyo`, // Your GitHub account
+    medium: ``, // Your Medium account
+    facebook: ``, // Your Facebook account
+    linkedin: ``, // Your LinkedIn account
+    instagram: ``, // Your Instagram account
   },
-  icon: `content/assets/felog.png`, 
-  keywords: [`frontend`,`react`],
+  icon: `content/assets/felog.png`, // Add your favicon
+  keywords: [`frontend`, `react`],
   comment: {
+    disqusShortName: '', // Your disqus-short-name. check disqus.com.
     utterances: 'imacoolgirlyo/tech-blog', // Your repository for archive comment
   },
   configs: {
