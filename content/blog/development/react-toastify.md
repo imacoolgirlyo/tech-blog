@@ -1,3 +1,10 @@
+---
+title: 'React Toastify 살펴보기'
+date: 2021-11-14 09:16:13
+category: 'Open Source'
+draft: true
+---
+
 toast는 유저가 클릭 할 때 마다 새로운 Toast 가 떠야 한다. 동시에 다른 Toast 메세지가 떠야 할 필요도 있다. 이건 어떻게 구현되어야 할까?
 
 클릭할 때 마다 보여줘야할 toast array에 item을 추가하면 될까?
