@@ -6,3 +6,16 @@
 example 폴더는 parcel로 번들된다.
 
 23일 오늘은 일단 프로젝트 세팅까지 완료했다. 내일은 테스트 코드 세팅을 할 예정
+
+### 11/23
+
+```ts
+/**
+ * @INTERNAL
+ */
+export interface NotValidatedToastProps extends Partial<ToastProps> {
+  toastId: Id
+}
+```
+
+`@INTERNAL`는 내부에서만 사용된다는 뜻 같다.
