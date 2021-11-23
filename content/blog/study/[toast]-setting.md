@@ -18,4 +18,5 @@ export interface NotValidatedToastProps extends Partial<ToastProps> {
 }
 ```
 
-`@INTERNAL`는 내부에서만 사용된다는 뜻 같다.
+- `@INTERNAL`는 내부에서만 사용된다는 뜻 같다.
+- `extends Partial<ToastProps>` 를 사용함으로써 NotValidatedToastProps 타입은 toastId가 필수로 들어가나 몇몇개의 ToastProps 내의 타입들이 포함될 수 있다.
