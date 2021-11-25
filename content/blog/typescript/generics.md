@@ -31,3 +31,9 @@ T라는 타입 변수를 추가했다. T는 arg의 타입을 캡쳐해서 이 �
 참고
 
 - https://www.typescriptlang.org/ko/docs/handbook/2/generics.html
+
+```ts
+let containers = new Map<ContainerInstance | Id, ContainerInstance>()
+```
+
+[ ] TO DO | 다음 Id, ContainerInstance가 같이 오는 건 어떤 의미 ? Map type에 대해서 익숙하지 않은건가..
