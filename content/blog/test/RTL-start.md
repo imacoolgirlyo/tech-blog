@@ -19,3 +19,7 @@ it('CheckboxWithLabel changes the text after click', () => {
 ```
 
 cleanup afterEach는 testing 라이브러리가 자동으로 실행시켜준다. 테스트가 끝난다음에는 컴포넌트를 Unmount 시키고 DOM을 정리함
+
+### Container, Presentational
+
+1. 둘을 따로 따로 분리해서 테스트
