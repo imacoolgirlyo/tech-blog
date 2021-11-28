@@ -53,3 +53,5 @@ const Event = {
   WillUnmount: 'WillUnmount',
 }
 ```
+
+type TimeoutId = ReturnType<typeof setTimeout>;
