@@ -5,6 +5,8 @@ category: 'TypeScript'
 draft: false
 ---
 
+[참고: React with TypeScript Cheatsheet](https://blog.bitsrc.io/react-with-typescript-cheatsheet-9dd891dc5bfe)
+
 ### inline styles 을 props로 전달시
 
 ```ts
