@@ -134,3 +134,17 @@ const [savePost, savePostInfo] = useMutation(
   }
 )
 ```
+
+### setQueryData의 updater function 에서 oldData가 undefined 일 경우
+
+[typeDefinition of updater function in setQueryData
+](https://github.com/tannerlinsley/react-query/issues/506)
+
+```ts
+queryCache.setQueryData('key', oldData => ({
+  ...oldData,
+  lastName: 'Smith',
+}))
+```
+
+oldData가 undefined 일 수 있다는 런타임 에러가 뜬다.

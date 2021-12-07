@@ -38,3 +38,11 @@ React.FC를 사용할 때는 props의 타입을 Generics로 넣어서 사용한�
    - String
    - React element (JSX)
    - 위 타입의 array
+
+### useRef
+
+```ts
+const timeoutId = useRef<ReturnType<typeof setTimeout> | null>(null)
+```
+
+https://react-typescript-cheatsheet.netlify.app/docs/basic/getting-started/hooks/#option-2-mutable-value-ref
