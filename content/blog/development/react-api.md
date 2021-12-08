@@ -32,3 +32,27 @@ useEffect 에 전달되는 함수는 render 결과물이 화면에 반영되고 
   - Commit Phase는 Render Phase에서 계산한 그 차이를 DOM에 반영하는 단계
 
 기본적으로 effect는 모든 render 이후에 실행되지만, dependency array에 값을 추가하여 특정 값이 변경될 때만 render가 실행되도록 설정할 수 있습니다.
+
+### [forwardRef](https://reactjs.org/docs/forwarding-refs.html)
+
+- DOM element에 직접 접근해서 값을 변경해줘야 할 때가 있다. 이 DOM element의 값을 부모에서 컨트롤 해줘야할 때 (focus나 selection) 부모는 자식의 ref를 가지고 있어야 한다. ex. ref.current.focus()
+- 부모 컴포넌트에서 ref를 정의 한 후에, ref를 단순히 props로 전달하고 그 Button이 ref를 dom에 attach하는 것만으로는 제대로 DOM을 가리키지 않는다.
+
+forward function을 사용하면 React가 ref를 `(props, ref) => ...` 형식으로 두번째 인자 위치에 전달시킨다.
+
+```js
+const List = () => {
+  const fancyButtonRef = useRef(null)
+  return (
+    <div>
+      <FancyButton ref={ref}>
+    </div>
+  )
+}
+```
+
+```js
+const FancyButton = forwardRef((props, ref) => (
+  <button ref={ref}>I'm a FancyButton yo.</button>
+))
+```
