@@ -148,3 +148,8 @@ queryCache.setQueryData('key', oldData => ({
 ```
 
 oldData가 undefined 일 수 있다는 런타임 에러가 뜬다.
+
+### React Query 를 다시 고민하게 된 계기
+
+현재 Typed에서는 documentId로 문서 내에 있는 폴더 데이터 배열을 가져온다.(Folder[]). 이 배열을 cache로 저장하기 보다는 folders 자체의 변경 사항(폴더 순서 변경, 삭제, 추가)보다 폴더 자체의 변경 사항(folder에 리소스 추가, 삭제 등)이 많기 때문에 folder 데이터 각각을 cache로 저장해야한다고 생각했다.
+하지만 folder의 순서도 어쨌든 배열로 cache 되어 있어야 하기 때문에 어떻게 구조를 잡아야할지 다시 고민됐다.
