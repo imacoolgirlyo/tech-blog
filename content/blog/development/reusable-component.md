@@ -1,8 +1,8 @@
 ---
-title: '재사용 가능한 Element 컴포넌트 만들기'
+title: '재사용 가능한 Button Element 컴포넌트 만들기'
 date: 2022-01-22 15:42:13
 category: 'development'
-draft: true
+draft: false
 ---
 
 ### 현재 구조에서 재사용 가능한 컴포넌트를 만들기 어려운 이유.
@@ -44,15 +44,140 @@ return(){
 
 ### | 조건
 
+- 버튼 구성은 icon과 이름으로 이루어져있다.
 - width, height, color 등이 다 다르다.
-- hover 상태 이외에 색이 바뀌어야 하는 상태들이 많다. isActive 됐을 떄나..
+- hover 상태 이외에 버튼마다 색이 바뀌어야 하는 조건들이 있을 수 있다.
 
 ### props로 styles을 넘겨 주기
 
 현재 프로젝트에서 emotion 을 사용하고 있기 때문에 css 와 cx 를 사용해서 스타일을 만들어줬다.
 
-```js
-return(){
-    <>
+버튼에 공통적으로 필요하고, 변하지 않는 값은 직접 props로 전달 하고 변할 수 있는 스타일들 (hover, active 상태에 따른 스타일)은 각 버튼마다 다 다를 수 있으니 styles 객체를 넘겨주는게 좋을거 같다고 판단했다.
+
+**변하지 않는 값(웬만하면)**
+
+- 버튼의 width, height
+- icon과 이름은 수직 정렬 되어 있다.
+
+**변할 수 있는 값**
+
+- hover 됐을 때, icon의 색
+- 클릭 됐을 때, name의 색이 변경되는 경우
+- 클릭 됐을 때, 배경 색이 변해야 하는 경우
+  등등
+
+```ts
+// interface 는 생략
+import React from 'react'
+import styled from '@emotion/styled'
+import { cx } from '@emotion/css'
+
+const IconButton = ({
+  width,
+  height,
+  icon,
+  name,
+  rootClassName = '',
+  iconClassName = '',
+  nameClassName = '',
+  onClick,
+}: IconButtonProps) => {
+  return (
+    <IconButtonRoot
+      width={width}
+      height={height}
+      className={rootClassName}
+      onClick={onClick}
+    >
+      <div className={cx('typed-icon', `${iconClassName}`)}>{icon}</div>
+      <Name className={cx('button-name', `${nameClassName}`)}>{name}</Name>
+    </IconButtonRoot>
+  )
 }
+
+const IconButtonRoot = styled.div<IconButtonRootProps>`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: ${props => props.width}px;
+  height: ${props => props.height}px;
+  cursor: pointer;
+`
+
+const Name = styled.div``
 ```
+
+Element 컴포넌트는 위와 같이 만들고 이를 base로 사용하여 새로운 버튼을 만들었다.
+
+### IconButton 확장판(1) : DocButton
+
+```js
+import { css } from '@emotion/css'
+
+const DocButton = () => {
+  return (
+    <IconButton
+      width={70}
+      height={90}
+      icon={<TypedIcon icon="docs_box" />}
+      name="DOCS"
+      rootClassName={rootClassName}
+      iconClassName={iconClassName}
+      nameClassName={nameClassName}
+    />
+  )
+}
+
+const rootClassName = css`
+  background-color: white;
+  border: 1px solid #e5e5e5;
+  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.05);
+  border-radius: 5px;
+
+  &:hover {
+    background: linear-gradient(0deg, rgba(0, 0, 0, 0.04), rgba(0, 0, 0, 0.04)),
+      #ffffff;
+  }
+`
+
+const iconClassName = css`
+  font-size: 35px;
+`
+const nameClassName = css`
+  color: #555555;
+  font-weight: 500;
+  font-size: 12px;
+  line-height: 20px;
+`
+
+export default DocButton
+```
+
+DocButton은 IconButton이 가지고 있는 기본 구조는 가져가고
+
+- 버튼에 맞는 스타일 (color, margin, box-shadow 등)
+- hover 되었을 때의 배경색
+
+스타일이 추가로 필요하기 때문에 rootClassName 이라는 class를 만들어줬다.
+
+### IconButton의 확장판(2): NavButton
+
+### 이 구조의 장점
+
+만약 IconButton 이라는 base 컴포넌트가 없었더라면, Root, Icon, Name 엘리먼트를 모두 만들어줘야 했을 것이다.
+
+```js
+return (
+  <Root>
+    <TypedIcon iconName='어쩌고' color>
+    <Name>{버튼 이름}</Name>
+  </Root>
+    <>
+)
+```
+
+### 아쉬운 점
+
+- 먼가.. 애매하다. BaseComponent인 IconButton이 실질적으로 해주는 건 매번 Root, TypedIcon, Name을 만들어주지 않아도 된다는 점과 자동 수직 정렬 밖에 없기 때문에 이게 과연 사용하기 편한 형태인지는 잘 모르겠다.
+- `@emotion/css`을 사용하고 있지 않다면 설치 후 `css`, `cx` API를 사용해야 한다는 점
