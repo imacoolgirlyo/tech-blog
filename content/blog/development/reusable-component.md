@@ -163,6 +163,50 @@ DocButton은 IconButton이 가지고 있는 기본 구조는 가져가고
 
 ### IconButton의 확장판(2): NavButton
 
+```js
+const NavButton = () => {
+  const [isActive, setIsActive] = useState(false)
+
+  const handleButtonClick = () => {
+    setIsActive(true)
+    setTimeout(() => setIsActive(false), 1000)
+  }
+
+  const iconClassName = css`
+    font-size: 24px;
+    margin-bottom: 3px;
+    * {
+      fill: ${isActive ? '#098ED0' : '#333333'};
+    }
+  `
+
+  const rootClassName = css`
+    background: #f7f7f7;
+    line-height: 14px;
+    text-align: center;
+    letter-spacing: -0.02em;
+    color: ${isActive ? '#098ED0' : '#333333'};
+
+    &:hover {
+      background: rgba(0, 0, 0, 0.04);
+    }
+  `
+
+  return (
+    <IconButton
+      width={60}
+      height={54}
+      icon={<TypedIcon icon="inbox_small" />}
+      name="Inbox"
+      rootClassName={rootClassName}
+      iconClassName={iconClassName}
+      nameClassName={nameClassName}
+      onClick={handleButtonClick}
+    />
+  )
+}
+```
+
 ### 이 구조의 장점
 
 만약 IconButton 이라는 base 컴포넌트가 없었더라면, Root, Icon, Name 엘리먼트를 모두 만들어줘야 했을 것이다.
