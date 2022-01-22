@@ -207,6 +207,8 @@ const NavButton = () => {
 }
 ```
 
+`NavButton`은 단순 hover 상태 뿐 만 아니라, `isActive` state에 따라서 스타일이 변경될 수 도 있다.
+
 ### 이 구조의 장점
 
 만약 IconButton 이라는 base 컴포넌트가 없었더라면, Root, Icon, Name 엘리먼트를 모두 만들어줘야 했을 것이다.
@@ -217,11 +219,15 @@ return (
     <TypedIcon iconName='어쩌고' color>
     <Name>{버튼 이름}</Name>
   </Root>
-    <>
 )
 ```
 
 ### 아쉬운 점
 
 - 먼가.. 애매하다. BaseComponent인 IconButton이 실질적으로 해주는 건 매번 Root, TypedIcon, Name을 만들어주지 않아도 된다는 점과 자동 수직 정렬 밖에 없기 때문에 이게 과연 사용하기 편한 형태인지는 잘 모르겠다.
-- `@emotion/css`을 사용하고 있지 않다면 설치 후 `css`, `cx` API를 사용해야 한다는 점
+- `@emotion/css`을 사용하고 있지 않다면 설치 후 `css`, `cx` API를 사용해야 한다는 점이다. 이미 현재 project에서는 `@emotion/react`를 사용하고 있으니 이 모듈을 사용해서 비슷하게 만들 수 있는 방법을 찾아야겠다.
+
+### 결론
+
+IconButton은 icon과 이름으로 이루어진 수직 정렬 버튼이고 이를 재사용해서 여러 다양한 형태의 버튼들을 만들고 싶었다. 버튼들은 각각의 style이 있을 수 있으니 다른 className을 사용하게 해서 버튼 만의 style을 추가시켜줬다.
+Icon 같은 경우에는 미리 원하는 상태의 Icon을 전달해서 이를 보여줄 수 도 있지만, 변경 될 수 있는 값들은 Root 컴포넌트 이던, Icon, Name이건 일관성있게 className으로 변경하고 싶어서 이 방식을 사용했다.
