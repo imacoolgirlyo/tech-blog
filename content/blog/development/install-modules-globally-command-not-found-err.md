@@ -9,6 +9,8 @@ draft: true
 개요 >
 
 - `npm install vercel -g` -> `vercel` 명령어가 없음
+  `command not found:vercel` 에러가 뜬다. 방금 설치했는데 왜 command가 없다는 에러가 발생할까?
+
 - 컴터에는 shell 명령어에는 vercel이 없음
   - shell은 무엇?
 - vercel 파일이 저장된 곳을 shell이 알도록 PATH를 추가해줘야함
