@@ -61,3 +61,8 @@
 docker image 만들었음. 어떻게 Run 시키나?
 
 - 일단 내가 만든 이미지를 볼려면 `docker images`로 모든 이미지 리스트 가져오기
+- `docker run -p 3000:3000 -d <image-name>`으로 container 실행
+
+docker container directory 확인해보기 :
+
+- `docker exec -it <container-id> /bin/bash`
