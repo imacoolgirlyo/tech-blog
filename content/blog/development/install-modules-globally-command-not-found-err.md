@@ -1,5 +1,5 @@
 ---
-title: `npm i module -g` 후 Command Not Found 에러를 마주했다면?
+title: global 모듈 설치 후 Command Not Found 에러를 마주했다면?
 date: 2022-11-13 00:11:21
 category: development
 thumbnail: { thumbnailSrc }
